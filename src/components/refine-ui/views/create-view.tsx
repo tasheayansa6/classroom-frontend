@@ -12,14 +12,37 @@ import {
 import { ArrowLeftIcon } from "lucide-react";
 import type { PropsWithChildren } from "react";
 
+import { Loader2, Save } from "lucide-react";
+import React from "react";
+
 type CreateViewProps = PropsWithChildren<{
-  className?: string;
+    className?: string;
+    isLoading?: boolean;
+    saveButtonProps?: {
+        disabled?: boolean;
+        onClick?: (e: React.BaseSyntheticEvent) => void;
+    };
 }>;
 
-export function CreateView({ children, className }: CreateViewProps) {
-  return (
-    <div className={cn("flex flex-col", "gap-4", className)}>{children}</div>
-  );
+export function CreateView({ children, className, saveButtonProps, isLoading }: CreateViewProps) {
+    return (
+        <div className={cn("flex flex-col", "gap-4", className)}>
+            {children}
+            <div className="flex items-center justify-end mt-4">
+                <Button
+                    {...saveButtonProps}
+                    disabled={isLoading || saveButtonProps?.disabled}
+                >
+                    {isLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                        <Save className="h-4 w-4" />
+                    )}
+                    <span className="ml-2">Save</span>
+                </Button>
+            </div>
+        </div>
+    );
 }
 
 type CreateHeaderProps = PropsWithChildren<{
