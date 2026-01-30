@@ -15,13 +15,30 @@ import {
 import { ArrowLeftIcon } from "lucide-react";
 import { EditButton } from "../buttons/edit";
 
+import { Skeleton } from "@/components/ui/skeleton";
+
 type ShowViewProps = PropsWithChildren<{
   className?: string;
+  isLoading?: boolean;
 }>;
 
-export function ShowView({ children, className }: ShowViewProps) {
+export function ShowView({
+  children,
+  className,
+  isLoading,
+}: ShowViewProps) {
   return (
-    <div className={cn("flex flex-col", "gap-4", className)}>{children}</div>
+    <div className={cn("flex flex-col", "gap-4", className)}>
+      {isLoading ? (
+        <div className="flex flex-col gap-4">
+          <Skeleton className="h-10 w-1/4" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      ) : (
+        children
+      )}
+    </div>
   );
 }
 
