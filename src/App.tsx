@@ -18,36 +18,52 @@ import { dataProvider } from "./providers/data";
 import Dashboard from "@/pages/dashboard";
 import SubjectsList from "@/pages/subject/list";
 import SubjectCreate from "@/pages/subject/create";
-import SubjectShow from "@/pages/subject/show";
 
-import { BookOpen, Home } from "lucide-react";
+
+import ClassesList from "@/pages/class/list";
+import ClassesCreate from "@/pages/class/create";
+
+import {BookOpen, GraduationCap, GraduationCapIcon, Home} from "lucide-react";
 import { Layout } from "@/components/refine-ui/layout/layout";
 
 function App() {
     return (
         <BrowserRouter>
-            <GitHubBanner />
             <RefineKbarProvider>
                 <ThemeProvider>
                     <DevtoolsProvider>
                         <Refine
                             dataProvider={dataProvider}
-                            routerProvider={routerProvider}
                             notificationProvider={useNotificationProvider()}
-
+                            routerProvider={routerProvider}
+                            options={{
+                                syncWithLocation: true,
+                                warnWhenUnsavedChanges: true,
+                                projectId: "kkWuv7-GgBIfw-P8CGy0",
+                            }}
                             resources={[
                                 {
                                     name: "dashboard",
                                     list: "/",
-                                    meta: { label: "Home", icon: <Home /> },
+                                    meta: {
+                                        label: "Home",
+                                        icon: <Home />,
+                                    },
                                 },
                                 {
                                     name: "subjects",
                                     list: "/subjects",
                                     create: "/subjects/create",
-                                    edit: "/subjects/edit/:id",
-                                    show: "/subjects/show/:id",
-                                    meta: { label: "Subjects", icon: <BookOpen /> },
+                                    meta: {
+                                        label: "Subjects",
+                                        icon: <BookOpen />,
+                                    },
+                                },
+                                {
+                                    name: "classes",
+                                    list: "/classes",
+                                    create: "/classes/create",
+                                    meta: { label: "Classes", icon: <GraduationCap /> },
                                 },
                             ]}
                         >
@@ -63,7 +79,13 @@ function App() {
                                     <Route path="subjects">
                                         <Route index element={<SubjectsList />} />
                                         <Route path="create" element={<SubjectCreate />} />
-                                        <Route path="show/:id" element={<SubjectShow />} />
+
+                                    </Route>
+
+                                    <Route path="classes">
+                                        <Route index element={<ClassesList />} />
+                                        <Route path="create" element={<ClassesCreate />} />
+
                                     </Route>
                                 </Route>
                             </Routes>
