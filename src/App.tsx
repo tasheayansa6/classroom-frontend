@@ -6,25 +6,24 @@ import routerProvider, {
     DocumentTitleHandler,
     UnsavedChangesNotifier,
 } from "@refinedev/react-router";
-import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router";
 import "./App.css";
-
 import { Toaster } from "./components/refine-ui/notification/toaster";
 import { useNotificationProvider } from "./components/refine-ui/notification/use-notification-provider";
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import { dataProvider } from "./providers/data.ts";
-
 import Dashboard from "@/pages/dashboard.tsx";
 import { BookOpen, Home, GraduationCap } from "lucide-react";
 import { Layout } from "@/components/refine-ui/layout/layout.tsx";
 
 // --- SUBJECTS ---
-import SubjectsList from "@/pages/subject/list.tsx";
-import SubjectCreate from "@/pages/subject/create.tsx";
+// Explicitly using .tsx to resolve 500 error ambiguity
+import SubjectsList from "@/pages/subject/list";
+import SubjectCreate from "@/pages/subject/create";
 
-// --- CLASSES ---
-import ClassesList from "@/pages/class/list.tsx";
-import ClassesCreate from "@/pages/class/create.tsx";
+
+import ClassesList from "@/pages/class/list";
+import ClassesCreate from "@/pages/class/create";
 
 function App() {
     return (
@@ -32,7 +31,6 @@ function App() {
             <GitHubBanner />
             <RefineKbarProvider>
                 <ThemeProvider>
-                    {/* ✅ DevtoolsProvider WITHOUT URL */}
                     <DevtoolsProvider>
                         <Refine
                             dataProvider={dataProvider}
@@ -67,28 +65,22 @@ function App() {
                                 <Route element={<Layout><Outlet /></Layout>}>
                                     <Route index element={<Dashboard />} />
 
-                                    {/* Subjects */}
                                     <Route path="subjects">
                                         <Route index element={<SubjectsList />} />
                                         <Route path="create" element={<SubjectCreate />} />
                                     </Route>
 
-                                    {/* Classes */}
                                     <Route path="classes">
                                         <Route index element={<ClassesList />} />
                                         <Route path="create" element={<ClassesCreate />} />
                                     </Route>
                                 </Route>
                             </Routes>
-
-                            {/* Notifications */}
                             <Toaster />
                             <RefineKbar />
                             <UnsavedChangesNotifier />
                             <DocumentTitleHandler />
                         </Refine>
-
-                        {/* ✅ Devtools panel */}
                         <DevtoolsPanel />
                     </DevtoolsProvider>
                 </ThemeProvider>
