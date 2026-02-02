@@ -1,83 +1,88 @@
-import {
-  BaseRecord,
-  DataProvider,
-  GetListParams,
-  GetListResponse,
-  GetOneParams,
-  GetOneResponse,
-} from "@refinedev/core";
+import { createDataProvider, CreateDataProviderOptions } from "@refinedev/rest";
 
-import { Subject } from "../types";
+import { CreateResponse, GetOneResponse, ListResponse } from "@/types";
+import { BACKEND_BASE_URL } from "@/constants";
 
-export const MOCK_SUBJECTS: Subject[] = [
-  {
-    id: 1,
-    code: "CS101",
-    name: "Introduction to Computer Science",
-    department: "CS",
-    description:
-        "An introductory course covering the fundamental concepts of computer science and programming.",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 2,
-    code: "MATH201",
-    name: "Calculus II",
-    department: "Math",
-    description: "Advanced study of integration, sequences, series, and power series.",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 3,
-    code: "ENG102",
-    name: "Literature and Composition",
-    department: "English",
-    description:
-        "A course focused on critical reading and writing through the study of various literary genres.",
-    createdAt: new Date().toISOString(),
-  },
-];
+const options: CreateDataProviderOptions = {
+  getList: {
+    getEndpoint: ({ resource }) => resource,
 
-export const dataProvider: DataProvider = {
-  getList: async <TData extends BaseRecord = BaseRecord>({
-                                                           resource,
-                                                         }: GetListParams): Promise<GetListResponse<TData>> => {
-    if (resource === "subjects") {
-      return {
-        data: MOCK_SUBJECTS as unknown as TData[],
-        total: MOCK_SUBJECTS.length,
-      };
-    }
+    buildQueryParams: async ({ resource, pagination, filters }) => {
+      const params: Record<string, string | number> = {};
 
-    return {
-      data: [] as TData[],
-      total: 0,
-    };
-  },
+      if (pagination?.mode !== "off") {
+        const page = pagination?.currentPage ?? 1;
+        const pageSize = pagination?.pageSize ?? 10;
 
-  getOne: async <TData extends BaseRecord = BaseRecord>({
-                                                          resource,
-                                                          id,
-                                                        }: GetOneParams): Promise<GetOneResponse<TData>> => {
-    if (resource === "subjects") {
-      const subject = MOCK_SUBJECTS.find((s) => s.id === Number(id));
-      if (!subject) throw new Error("Subject not found");
-      return { data: subject as unknown as TData };
-    }
-    throw new Error("Resource not found in mock");
+        params.page = page;
+        params.limit = pageSize;
+      }
+
+      filters?.forEach((filter) => {
+        const field = "field" in filter ? filter.field : "";
+        const value = String(filter.value);
+
+        if (field === "role") {
+          params.role = value;
+        }
+
+        if (resource === "departments") {
+          if (field === "name" || field === "code") params.search = value;
+        }
+
+        if (resource === "users") {
+          if (field === "search" || field === "name" || field === "email") {
+            params.search = value;
+          }
+        }
+
+        if (resource === "subjects") {
+          if (field === "department") params.department = value;
+          if (field === "name" || field === "code") params.search = value;
+        }
+
+        if (resource === "classes") {
+          if (field === "name") params.search = value;
+          if (field === "subject") params.subject = value;
+          if (field === "teacher") params.teacher = value;
+        }
+      });
+
+      return params;
+    },
+
+    mapResponse: async (response) => {
+      const payload: ListResponse = await response.json();
+      return payload.data ?? [];
+    },
+
+    getTotalCount: async (response) => {
+      const payload: ListResponse = await response.json();
+      return payload.pagination?.total ?? payload.data?.length ?? 0;
+    },
   },
 
-  create: async () => {
-    throw new Error("This function is not implemented in mock");
+  create: {
+    getEndpoint: ({ resource }) => resource,
+
+    buildBodyParams: async ({ variables }) => variables,
+
+    mapResponse: async (response) => {
+      const json: CreateResponse = await response.json();
+      return json.data ?? {};
+    },
   },
 
-  update: async () => {
-    throw new Error("This function is not implemented in mock");
-  },
+  getOne: {
+    getEndpoint: ({ resource, id }) => `${resource}/${id}`,
 
-  deleteOne: async () => {
-    throw new Error("This function is not implemented in mock");
+    mapResponse: async (response) => {
+      const json: GetOneResponse = await response.json();
+      return json.data ?? {};
+    },
   },
-
-  getApiUrl: () => "",
 };
+
+const { dataProvider } = createDataProvider(BACKEND_BASE_URL, options);
+
+export { dataProvider };

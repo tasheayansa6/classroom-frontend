@@ -1,140 +1,140 @@
-import {ListView} from "@/components/refine-ui/views/list-view.tsx";
-import {Breadcrumb} from "@/components/refine-ui/layout/breadcrumb.tsx";
-import {Search} from "lucide-react";
-import {Input} from "@/components/ui/input.tsx";
-import {useMemo, useState} from "react";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
-import {DEPARTMENTS_OPTIONS} from "@/constants";
-import {CreateButton} from "@/components/refine-ui/buttons/create.tsx";
-import {DataTable} from "@/components/refine-ui/data-table/data-table.tsx";
-import {useTable} from "@refinedev/react-table";
-import {Subject} from "@/types";
+import { ListView } from "@/components/refine-ui/views/list-view.tsx";
+import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb.tsx";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input.tsx";
+import { useMemo, useState } from "react";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select.tsx";
+import { CreateButton } from "@/components/refine-ui/buttons/create.tsx";
+import { DataTable } from "@/components/refine-ui/data-table/data-table.tsx";
+import { useTable } from "@refinedev/react-table";
+import { Subject } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
-
-import {Badge} from "@/components/ui/badge.tsx";
-
-
+import { Badge } from "@/components/ui/badge.tsx";
+import { DEPARTMENT_OPTIONS } from "@/providers/constants";
 
 const SubjectsList = () => {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedDepartment, setSelectedDepartment] = useState('all');
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedDepartment, setSelectedDepartment] = useState("all");
 
-    const departmentFilters = selectedDepartment === 'all' ? []: [
-        { field: 'department',operator: 'eq' as const, value: selectedDepartment }
-    ];
-    const searchFilters = searchQuery ? [
-        { field: 'name', operator:'contains' as const, value: searchQuery }
+    const departmentFilters =
+        selectedDepartment === "all"
+            ? []
+            : [{ field: "department", operator: "eq" as const, value: selectedDepartment }];
 
-    ]: [];
-
-
+    const searchFilters = searchQuery
+        ? [{ field: "name", operator: "contains" as const, value: searchQuery }]
+        : [];
 
     const subjectTable = useTable<Subject>({
         columns: useMemo<ColumnDef<Subject>[]>(() => [
             {
-                id: 'name',
-                accessorKey:'name',
-                size:200,
+                id: "name",
+                accessorKey: "name",
+                size: 200,
                 header: () => <p className="column-title">Name</p>,
-                filterFn:'includesString'
             },
             {
                 id: "code",
                 accessorKey: "code",
                 size: 100,
-                header: () =>  <p className="column-title ml-2">Code</p>,
+                header: () => <p className="column-title ml-2">Code</p>,
                 cell: ({ getValue }) => (
-                    <Badge>{getValue<string>()}</Badge>
+                    <Badge>{String(getValue() ?? "")}</Badge>
                 ),
             },
             {
-                id: 'department',
-                accessorKey:'department',
-                size:150,
-                header:() => <p className="column-title">Departmment</p>,
-                cell: ({ getValue }) => <Badge
-                    variant="secondary">{getValue<string>()}</Badge>,
+                id: "department",
+                accessorKey: "department",
+                size: 150,
+                header: () => <p className="column-title">Department</p>,
+                cell: ({ getValue }) => {
+                    const department = getValue<any>();
+                    return (
+                        <Badge variant="secondary">
+                            {department?.name ?? "—"}
+                        </Badge>
+                    );
+                },
             },
             {
-                id:'description',
-                accessorKey:'description',
-                size:300,
+                id: "description",
+                accessorKey: "description",
+                size: 300,
                 header: () => <p className="column-title">Description</p>,
-                cell: ({ getValue }) => <span className="truncate-clamp-2">{getValue<string>()}</span>,
-
-            }
+                cell: ({ getValue }) => (
+                    <span className="line-clamp-2">
+                        {String(getValue() ?? "")}
+                    </span>
+                ),
+            },
         ], []),
 
-
         refineCoreProps: {
-            resource: 'subjects',
-            pagination: {pageSize: 10, mode:'server'},
+            resource: "subjects",
+            pagination: { pageSize: 10, mode: "server" },
             filters: {
-                permanent: [...departmentFilters, ...searchFilters]
+                permanent: [...departmentFilters, ...searchFilters],
             },
-            sorters:{
-                initial: [
-                    {
-                       field: 'id', order: 'desc'
-                    },
-                ]
+            sorters: {
+                initial: [{ field: "id", order: "desc" }],
             },
-
-
-
-        }
-
+        },
     });
+
     return (
-       <ListView>
-       <Breadcrumb />
-           <h1 className="page-title">Subjects</h1>
+        <ListView>
+            <Breadcrumb />
+            <h1 className="page-title">Subjects</h1>
 
-           <div className="intro-row">
-               <p>Quick access to essential metrics and management tools.</p>
+            <div className="intro-row">
+                <p>Quick access to essential metrics and management tools.</p>
 
-               <div className="actions-row flex items-center gap-2">
-                   <div className="search-field relative flex-1">
-                       <Search className="search-icon absolute left-3 top-1/2 -translate-y-1/2" />
+                <div className="actions-row flex items-center gap-2 mt-4">
+                    <div className="search-field relative flex-1">
+                        <Search className="search-icon absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                            type="text"
+                            placeholder="Search by name..."
+                            className="pl-10 w-full"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
 
-                       <Input
-                           type="text"
-                           placeholder="Search by name..."
-                           className="pl-10 w-full"
-                           value={searchQuery}
-                           onChange={(e) => setSearchQuery(e.target.value)}
-                       />
-                   </div>
+                    <div className="flex gap-2">
+                        <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Department" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Departments</SelectItem>
+                                {DEPARTMENT_OPTIONS.map((department) => (
+                                    <SelectItem
+                                        key={department.value}
+                                        value={department.value}
+                                    >
+                                        {department.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
 
-                   <div className="flex gap-2">
-                       <Select
-                           value={selectedDepartment}
-                           onValueChange={setSelectedDepartment}
-                       >
-                           <SelectTrigger>
-                               <SelectValue placeholder="Filter by department..." />
-                           </SelectTrigger>
+                        <CreateButton />
+                    </div>
+                </div>
+            </div>
 
-                           <SelectContent>
-                               <SelectItem value="all">All Departments</SelectItem>
-                               {DEPARTMENTS_OPTIONS.map((department) => (
-                                   <SelectItem
-                                       key={department.value}
-                                       value={department.value}
-                                   >
-                                       {department.label}
-                                   </SelectItem>
-                               ))}
-                           </SelectContent>
-                       </Select>
+            <div className="mt-6">
+                <DataTable table={subjectTable} />
+            </div>
+        </ListView>
+    );
+};
 
-                       <CreateButton />
-                   </div>
-               </div>
-           </div>
-
-           <DataTable table={subjectTable} />
-       </ListView>
-    )
-}
-export default SubjectsList
+export default SubjectsList;
