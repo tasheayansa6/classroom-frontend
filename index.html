@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
   <meta charset="utf-8" />
   <link rel="icon" href="/favicon.ico" />
@@ -9,6 +7,23 @@
           name="description"
           content="refine | Build your React-based CRUD applications, without constraints."
   />
+
+  <!-- Arcjet RUM Script -->
+  <script>
+    !function(a,r,c,j,e,t){
+      a.Arcjet=a.Arcjet||[];
+      a.Arcjet.push({
+        key:"ajkey_01kgby02vgfbe9y0qvndfrj0rv", // your ARCJET_KEY
+        env:"development" // or "production" for live
+      });
+      var s=r.createElement("script");
+      s.src="https://cdn.arcjet.com/rum.js";
+      s.async=1;
+      r.head.appendChild(s);
+    }(window,document);
+  </script>
+
+  <!-- Existing RUM / Cloudinary / other scripts -->
   <script type="text/javascript">
     (function(w,d,s,r,k,h,m){
       if(w.performance && w.performance.timing && w.performance.navigation && !w.s247r) {
@@ -27,9 +42,3 @@
     Refine - Build your React-based CRUD applications, without constraints.
   </title>
 </head>
-<body>
-<noscript>You need to enable JavaScript to run this app.</noscript>
-<div id="root"></div>
-<script type="module" src="/src/index.tsx"></script>
-</body>
-</html>
